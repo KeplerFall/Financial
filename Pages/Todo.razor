@@ -1,0 +1,41 @@
+﻿@page "/todo"
+
+
+<h3>Todo</h3>
+
+<input type="text" placeholder="Title" @bind="newTodoTitle">
+<button class="btn btn-primary" @onclick="AddTodo">New Task</button>
+<button @onclick="()=> DataFetch()">Fetch Data</button>
+@returnzinho
+
+@foreach (TodoItem item in todos){
+    <div>
+        <li>@(item.IsDone ?  "Done: " :  " Not Done: ") @item.Title</li>
+        <button @onclick="() => MarkAsDone(item)" style="@(item.IsDone ? "display: none;" : "")">Done</button>
+    </div>
+}
+
+@code {
+    string returnzinho = "ambauto";
+    private List<TodoItem> todos = new();
+    private string? newTodoTitle = "";
+    private void AddTodo(){
+        if(string.IsNullOrWhiteSpace(newTodoTitle)) return;
+        TodoItem item = new TodoItem();
+        item.Title = newTodoTitle;
+        newTodoTitle = "";
+        todos.Add(item);
+    }
+
+    private void MarkAsDone(TodoItem item){
+        item.IsDone = true;
+    }
+
+    private async void DataFetch(){
+        string apiUrl = "https://pokeapi.co/api/v2/pokemon/1";
+        HttpClient client = new HttpClient();
+        HttpResponseMessage response = await client.GetAsync(apiUrl);
+        string json = response.Content.ReadAsStringAsync().Result;
+        returnzinho = json;
+    }
+}
